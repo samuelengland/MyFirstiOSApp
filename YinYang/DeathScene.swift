@@ -1,5 +1,5 @@
 //
-//  GameScene.swift
+//  DeathScene.swift
 //  YinYang
 //
 //  Created by u0830004 on 4/23/15.
@@ -7,54 +7,72 @@
 //
 
 import SpriteKit
+import UIKit
 
-class GameScene: SKScene
+
+class DeathScene: SKScene, ScoreDelegate
 {
     //hack for a button, done in the touches began
     var playButton: SKLabelNode?
     
     //title of game
-    var gameTitle: SKLabelNode?
+    var scoreTitle: SKLabelNode?
     
     //scores button
     var scoresButton: SKLabelNode?
     
-    //insctructions button
-    var instructButton: SKLabelNode?
+    var backButton: SKLabelNode?
     
     //gives background
     var background: SKSpriteNode?
     
     //sets picture of background
-    var backgroundTexture = SKTexture(imageNamed: "homeBackgroundYinYang")
+    var backgroundTexture = SKTexture(imageNamed: "brokenYinYang")
+    
+    //score to display
+    var score: Int?
+    
     
     override func didMoveToView(view: SKView)
     {
-        
-        
+        //sets background to black for transparency of the picture
+        self.backgroundColor = UIColor.blackColor()
         background = SKSpriteNode(texture: backgroundTexture)
+        
+        //sizes the sprite,
         background?.size = self.frame.size
+        background?.setScale(0.5)
+        
+        //adds to scene + positions
         background?.position = CGPoint(x: CGRectGetMidX(self.frame),y: CGRectGetMidY(self.frame))
         addChild(background!)
         
         
         //sets up the title
-        gameTitle = SKLabelNode(text: "Y I N  Y A N G")
-        gameTitle?.fontColor = UIColor.whiteColor()
-        gameTitle?.fontSize = 40
-        gameTitle?.fontName = "Verdana-Bold"
-        gameTitle?.position = CGPoint(x: CGRectGetMidX(self.frame), y: self.frame.height - 200)
+        scoreTitle = SKLabelNode(text: "SCORE: \(score!)")
+        scoreTitle?.fontColor = UIColor.whiteColor()
+        scoreTitle?.fontSize = 40
+        scoreTitle?.fontName = "Verdana-Bold"
+        scoreTitle?.position = CGPoint(x: CGRectGetMidX(self.frame), y: self.frame.height - 150)
         
         
         //sets up playButton
-        playButton = SKLabelNode(text: "P L A Y")
-        playButton?.fontColor = UIColor.blackColor()
+        playButton = SKLabelNode(text: "PLAY AGAIN")
+        playButton?.fontColor = UIColor.whiteColor()
         //playButton.c
         playButton?.fontSize = 40
         playButton?.fontName = "Verdana-Bold"
         playButton?.name = "playButton"
-        playButton?.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame) - 150)
-
+        playButton?.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame) - 250)
+        
+        //sets up playButton
+        backButton = SKLabelNode(text: "BACK")
+        backButton?.fontColor = UIColor.whiteColor()
+        backButton?.fontSize = 20
+        backButton?.fontName = "Verdana-Bold"
+        backButton?.name = "backButton"
+        backButton?.position = CGPoint(x: 100, y: self.frame.height - 150)
+        
         //sets up playButton
         scoresButton = SKLabelNode(text: "SCORES")
         scoresButton?.fontColor = UIColor.whiteColor()
@@ -62,26 +80,25 @@ class GameScene: SKScene
         scoresButton?.fontName = "Verdana-Bold"
         scoresButton?.name = "scoresButton"
         scoresButton?.position = CGPoint(x: self.frame.width - 150, y: self.frame.height - 150)
-
         
-        instructButton = SKLabelNode(text: "INSTRUCTIONS")
-        instructButton?.fontColor = UIColor.whiteColor()
-        instructButton?.fontSize = 20
-        instructButton?.fontName = "Verdana-Bold"
-        instructButton?.name = "instructButton"
-        instructButton?.position = CGPoint(x: 150, y: self.frame.height - 150)
-
         
-        addChild(gameTitle!)
+        addChild(scoreTitle!)
         addChild(playButton!)
         addChild(scoresButton!)
-        addChild(instructButton!)
+        addChild(backButton!)
         
+        
+    }
+    
+    
+    func showScore(sentScore: Int)
+    {
+        score = sentScore
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?)
     {
-        let touch: UITouch = (touches.first as UITouch?)!
+        let touch: UITouch = (touches.first)!
         
         let location = touch.locationInNode(self)
         let nodeTouched = self.nodeAtPoint(location)
@@ -97,10 +114,21 @@ class GameScene: SKScene
             self.scene?.view?.presentScene(scene, transition: transition)
         }
         
-        //if they press play
+        //if they press back
+        if nodeTouched.name == "backButton"
+        {
+            let transition = SKTransition.fadeWithDuration(1)
+            
+            let scene = GameScene(size: self.scene!.size)
+            scene.scaleMode = SKSceneScaleMode.AspectFill
+            
+            self.scene?.view?.presentScene(scene, transition: transition)
+        }
+        
+        //if they press scores
         if nodeTouched.name == "scoresButton"
         {
-            let transition = SKTransition.doorsOpenHorizontalWithDuration(1)
+            let transition = SKTransition.fadeWithDuration(1)
             
             let scene = Scores(size: self.scene!.size)
             scene.scaleMode = SKSceneScaleMode.AspectFill
@@ -108,19 +136,7 @@ class GameScene: SKScene
             self.scene?.view?.presentScene(scene, transition: transition)
         }
         
-        //pressing instructions
-        if nodeTouched.name == "instructButton"
-        {
-            let transition = SKTransition.doorsOpenHorizontalWithDuration(1)
-            
-            let scene = Instructions(size: self.scene!.size)
-            scene.scaleMode = SKSceneScaleMode.AspectFill
-            
-            self.scene?.view?.presentScene(scene, transition: transition)
-        }
-        
         
     }
-    
     
 }
